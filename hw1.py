@@ -68,11 +68,11 @@ def BFS(start: str) -> list:
     start_node = stringToInt[start] #convert starting node to int (to index into adjacency matrix)
     goal_node = 6 #int representation of node 'G'
     queue = [] #implement queue using list
-    visited = [] #contains order in which nodes have been reached/discovered 
-    expanded = [] #contains order in which nodes were expanded/explored
+    reached = [] #contains nodes which have been discovered (preventing same nodes from being added to queue)
+    expanded = [] #contains order in which nodes were expanded
 
     queue.append(start_node) #add start node to queue
-    visited.append(start_node)#add to visited list
+    reached.append(start_node)#add to visited list
 
     while (len(queue) != 0):
         node = queue.pop(0) #pop node from queue
@@ -82,14 +82,14 @@ def BFS(start: str) -> list:
         #i represents index of other nodes
         #add adjacent nodes that have not been visited 
         for i in range(num_elements_in_row):
-            if (G[node][i] > 0 and i not in visited):
+            if (G[node][i] > 0 and i not in reached):
                 #check if 'G' is discovered during expansion
                 if (i == goal_node):
                     expanded.append(i)
                     return convert_indices_to_string(expanded) #early termination after finding goal
                 else:
                     queue.append(i)
-                    visited.append(i)
+                    reached.append(i)
                     
     return convert_indices_to_string(expanded)
     
