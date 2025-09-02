@@ -2,7 +2,7 @@
 #OU Fall 2025 
 #AI - Homework 1
 
-
+from collections import deque
 # Problem: Implement the Breadth-First Search (BFS), Depth-First Search (DFS) 
 # and Greedy Best-First Search (GBFS) algorithms on the graph from Figure 1 in hw1.pdf.
 
@@ -75,7 +75,7 @@ def BFS(start: str) -> list:
     visited.append(start_node)#add to visited list
 
     while (len(queue) != 0):
-        node = queue.pop(0) #pop current node from queue
+        node = queue.pop(0) #pop node from queue
         expanded.append(node) #node is about to be expanded below
         
         num_elements_in_row = len(G[node]) #gets number of elements in this node's row in adjacency matrix
@@ -96,9 +96,35 @@ def BFS(start: str) -> list:
 
 
 def DFS(start: str) -> list:
-    # START: Your code here
-    return []
-    # END: Your code here
+    start_node = stringToInt[start] #convert starting node to int (to index into the adjacency matrix)
+    goal_node = 6 #int representation of node 'G'
+    stack = deque() #implement stack using deque class from collections module
+    visited = [] #keep track of visited/expanded nodes
+
+    stack.append(start_node)#add start node to stack 
+
+    while (len(stack) != 0):
+        node = stack.pop() #pop top (rightmost) node from stack 
+        visited.append(node) #mark node as visited since it is about to be expanded below 
+        neighbors = []#this list will be used to reverse popped node's neighbors (ensuring correct alphabetical order expansion). For example, stack = [G, B] where B will be popped first and expanded
+        
+        #add node's adjacent neighbors to the stack 
+        num_elements_in_row = len(G[node]) # get number of elements in this node's row in adjacency matrix
+        for i in range(num_elements_in_row):
+            if(G[node][i] > 0 and i not in visited):
+                #check if goal node is discovered during expansion
+                if(i == goal_node):
+                    visited.append(i)
+                    return convert_indices_to_string(visited)
+                else: 
+                    neighbors.append(i) 
+
+        reversed_neighbors = list(reversed(neighbors)) #reverse list containing adjacent nodes
+        stack.extend(reversed_neighbors)#merge back into stack with the correct alphabetical order
+    
+    return convert_indices_to_string(visited)
+
+
 
 
 def GBFS(start: str) -> list:
