@@ -68,7 +68,7 @@ def BFS(start: str) -> list:
     start_node = stringToInt[start] #convert starting node to int (to index into adjacency matrix)
     goal_node = 6 #int representation of node 'G'
     queue = [] #implement queue using list
-    reached = [] #contains nodes which have been discovered (preventing same nodes from being added to queue)
+    reached = [] #contains nodes which have already been discovered (preventing reprocessing)
     expanded = [] #contains order in which nodes were expanded
 
     queue.append(start_node) #add start node to queue
@@ -83,7 +83,7 @@ def BFS(start: str) -> list:
         #add adjacent nodes that have not been visited 
         for i in range(num_elements_in_row):
             if (G[node][i] > 0 and i not in reached):
-                #check if 'G' is discovered during expansion
+                #check if 'G' is discovered from expansion of current node (to save memory)
                 if (i == goal_node):
                     expanded.append(i)
                     return convert_indices_to_string(expanded) #early termination after finding goal
@@ -98,31 +98,31 @@ def BFS(start: str) -> list:
 def DFS(start: str) -> list:
     start_node = stringToInt[start] #convert starting node to int (to index into the adjacency matrix)
     goal_node = 6 #int representation of node 'G'
-    stack = deque() #implement stack using deque class from collections module
-    visited = [] #keep track of visited/expanded nodes
+    stack = deque() #implement stack using deque class from collections module (better performance than list)
+    expanded = [] #keep track of expanded nodes
 
     stack.append(start_node)#add start node to stack 
 
     while (len(stack) != 0):
         node = stack.pop() #pop top (rightmost) node from stack 
-        visited.append(node) #mark node as visited since it is about to be expanded below 
+        expanded.append(node) #node is about to be expanded below
         neighbors = []#this list will be used to reverse popped node's neighbors (ensuring correct alphabetical order expansion). For example, stack = [G, B] where B will be popped first and expanded
         
         #add node's adjacent neighbors to the stack 
         num_elements_in_row = len(G[node]) # get number of elements in this node's row in adjacency matrix
         for i in range(num_elements_in_row):
-            if(G[node][i] > 0 and i not in visited):
+            if(G[node][i] > 0 and i not in expanded):
                 #check if goal node is discovered during expansion
                 if(i == goal_node):
-                    visited.append(i)
-                    return convert_indices_to_string(visited)
+                    expanded.append(i)
+                    return convert_indices_to_string(expanded)
                 else: 
                     neighbors.append(i) 
 
         reversed_neighbors = list(reversed(neighbors)) #reverse list containing adjacent nodes
         stack.extend(reversed_neighbors)#merge back into stack with the correct alphabetical order
     
-    return convert_indices_to_string(visited)
+    return convert_indices_to_string(expanded)
 
 
 
