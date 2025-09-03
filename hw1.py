@@ -67,29 +67,33 @@ def convert_indices_to_string(indices_list):
 def BFS(start: str) -> list:
     start_node = stringToInt[start] #convert starting node to int (to index into adjacency matrix)
     goal_node = 6 #int representation of node 'G'
-    queue = [] #implement queue using list
-    reached = [] #contains nodes which have already been discovered (preventing reprocessing)
-    expanded = [] #contains order in which nodes were expanded
+    queue = [] #implement queue using list 
+    visited = [] #contains nodes which have been discovered
+    expanded = [] #contains order in which nodes were expanded/explored (list will be returned)
 
     queue.append(start_node) #add start node to queue
-    reached.append(start_node)#add to visited list
+    visited.append(start_node)#add start node to visited list
 
     while (len(queue) != 0):
         node = queue.pop(0) #pop node from queue
-        expanded.append(node) #node is about to be expanded below
+
+        #check if node contains goal state 
+        if (node == goal_node):
+            return (convert_indices_to_string(expanded))
         
+        expanded.append(node) #node is about to be expanded below
         num_elements_in_row = len(G[node]) #gets number of elements in this node's row in adjacency matrix
         #i represents index of other nodes
         #add adjacent nodes that have not been visited 
         for i in range(num_elements_in_row):
-            if (G[node][i] > 0 and i not in reached):
+            if (G[node][i] > 0 and i not in visited):
                 #check if 'G' is discovered from expansion of current node (to save memory)
                 if (i == goal_node):
                     expanded.append(i)
                     return convert_indices_to_string(expanded) #early termination after finding goal
                 else:
                     queue.append(i)
-                    reached.append(i)
+                    visited.append(i)
                     
     return convert_indices_to_string(expanded)
     
