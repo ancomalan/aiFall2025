@@ -176,13 +176,14 @@ def GBFS(start: str) -> list:
 
     while (len(frontier) != 0):
         priority, node = heapq.heappop(frontier)         #pop node with highest priority
-        expanded.append(node)#mark node as expanded because it will be expanded below
 
         #check if current node is goal node and return early 
         if (node == goal_node):
             expanded.append(node)
             return convert_indices_to_string(expanded)
         
+        expanded.append(node)#mark node as expanded because it will be expanded below
+
         #add its adjacent nodes with their priorities that haven't been visited yet
         for i in range(len(G[node])):
             if (G[node][i] > 0 and i not in visited):
