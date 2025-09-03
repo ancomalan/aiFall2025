@@ -79,6 +79,7 @@ def BFS(start: str) -> list:
 
         #check if node contains goal state 
         if (node == goal_node):
+            expanded.append(node)
             return (convert_indices_to_string(expanded))
         
         expanded.append(node) #node is about to be expanded below
@@ -94,39 +95,48 @@ def BFS(start: str) -> list:
                 else:
                     queue.append(i)
                     visited.append(i)
-                    
+                
     return convert_indices_to_string(expanded)
     
 
+
+
+def dfs_helper(node, visited_list, expanded_list):
+    goal_node = 6 #representing 'G'
+    #if node has already been visited, backtrack
+    if (node in visited_list):
+        return 
+    else: 
+        visited_list.append(node)#mark node as visited 
+        expanded_list.append(node) #node is about to be expanded below 
+           
+        num_elements_in_row = len(G[node]) #gets number of elements in this node's row in adjacency matrix
+        
+        #add adjacent nodes that have not been visited 
+        for i in range(num_elements_in_row):
+            if (G[node][i] > 0 and i not in visited_list):
+                #if goal node found during generation of child nodes, signal up call stack 
+                if (i == goal_node):
+                    expanded_list.append(i)
+                    return True 
+                
+                found = dfs_helper(i, visited_list, expanded_list)#recursively call the dfs helper on the child node 
+                if (found == True):
+                    return True  #return True up the call stack indicating that goal is found
+        return 
+        
+        
 
 def DFS(start: str) -> list:
-    start_node = stringToInt[start] #convert starting node to int (to index into the adjacency matrix)
-    goal_node = 6 #int representation of node 'G'
-    stack = deque() #implement stack using deque class from collections module (better performance than list)
-    expanded = [] #keep track of expanded nodes
-
-    stack.append(start_node)#add start node to stack 
-
-    while (len(stack) != 0):
-        node = stack.pop() #pop top (rightmost) node from stack 
-        expanded.append(node) #node is about to be expanded below
-        neighbors = []#this list will be used to reverse popped node's neighbors (ensuring correct alphabetical order expansion). For example, stack = [G, B] where B will be popped first and expanded
-        
-        #add node's adjacent neighbors to the stack 
-        num_elements_in_row = len(G[node]) # get number of elements in this node's row in adjacency matrix
-        for i in range(num_elements_in_row):
-            if(G[node][i] > 0 and i not in expanded):
-                #check if goal node is discovered during expansion
-                if(i == goal_node):
-                    expanded.append(i)
-                    return convert_indices_to_string(expanded)
-                else: 
-                    neighbors.append(i) 
-
-        reversed_neighbors = list(reversed(neighbors)) #reverse list containing adjacent nodes
-        stack.extend(reversed_neighbors)#merge back into stack with the correct alphabetical order
-    
+    start_node = stringToInt[start]
+    expanded = [] #contains order in which nodes were expanded 
+    visited = [] #contains nodes which have been discovered 
+    dfs_helper(start_node, visited, expanded)#call DFS helper function to perform recursive DFS
     return convert_indices_to_string(expanded)
+  
+
+
+   
 
 
 
