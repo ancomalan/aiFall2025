@@ -3,6 +3,7 @@
 #AI - Homework 1
 
 from collections import deque
+import heapq #priority queue
 # Problem: Implement the Breadth-First Search (BFS), Depth-First Search (DFS) 
 # and Greedy Best-First Search (GBFS) algorithms on the graph from Figure 1 in hw1.pdf.
 
@@ -53,6 +54,27 @@ stringToInt = {
 }
 intToString = {
     0:'A', 1:'B', 2:'C', 3:'D', 4:'E', 5:'F', 6:'G', 7:'H', 8:'I', 9:'J', 10:'K', 11:'L', 12:'M', 13:'N', 14: 'P', 15: 'Q', 16:'S'
+}
+
+#dictionary to lookup estimmated cost of the cheapest path from a node to a goal 
+heuristics = {
+    0: 10, #A
+    1: 9, #B
+    2: 16, #C
+    3: 21, #D
+    4: 13, #E
+    5: 9, #F
+    6: 0, #G
+    7: 12,  #H
+    8: 9, #I
+    9: 5,  #J
+    10: 8, #K
+    11: 18, #L
+    12: 3, #M
+    13: 4, #N
+    14: 6, #P
+    15: 9, #Q
+    16: 17 #S
 }
 
 #helper function that returns node label list from given node index list
@@ -106,6 +128,10 @@ def dfs_helper(node, visited_list, expanded_list):
     #if node has already been visited, backtrack
     if (node in visited_list):
         return 
+    #check if node is goal node 
+    elif (node == goal_node):
+        expanded_list.append(node)
+        return True
     else: 
         visited_list.append(node)#mark node as visited 
         expanded_list.append(node) #node is about to be expanded below 
@@ -137,14 +163,38 @@ def DFS(start: str) -> list:
 
 
    
-
-
-
-
 def GBFS(start: str) -> list:
-    # START: Your code here
-    return []
-    # END: Your code here
+    goal_node = 6 #representing 'G'
+    start_node = stringToInt[start] #get start node 
+    expanded = [] #order that nodes were expanded/explored (will be returned)
+    visited = [] #nodes that have been discovered 
+    frontier = [] #list of nodes to be expanded
+
+    #add tuple containing (h(n), n)
+    heapq.heappush(frontier, (heuristics[start_node], start_node ))#add start node with its priority (heurisitc) to the priority queue that will be implemented using heapq
+    visited.append(start_node)#mark start node as visited 
+
+    while (len(frontier) != 0):
+        priority, node = heapq.heappop(frontier)         #pop node with highest priority
+        expanded.append(node)#mark node as expanded because it will be expanded below
+
+        #check if current node is goal node and return early 
+        if (node == goal_node):
+            expanded.append(node)
+            return convert_indices_to_string(expanded)
+        
+        #add its adjacent nodes with their priorities that haven't been visited yet
+        for i in range(len(G[node])):
+            if (G[node][i] > 0 and i not in visited):
+                #if goal node found during generation, return 
+                if (i == goal_node):
+                    expanded.append(i)
+                    return (convert_indices_to_string(expanded))
+                
+                visited.append(i)#mark child node as visited 
+                heapq.heappush(frontier, (heuristics[i], i))#add child node to priority queue with given heuristic
+
+    return convert_indices_to_string(expanded)
 
 
 
