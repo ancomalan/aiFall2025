@@ -2,7 +2,6 @@
 #OU Fall 2025 
 #AI - Homework 1
 
-from collections import deque
 import heapq #priority queue
 # Problem: Implement the Breadth-First Search (BFS), Depth-First Search (DFS) 
 # and Greedy Best-First Search (GBFS) algorithms on the graph from Figure 1 in hw1.pdf.
@@ -218,6 +217,7 @@ def run_tests():
     
     # Test case 6: GBFS starting from node 'S'
     assert GBFS('S') == ['S', 'C', 'B', 'F', 'J', 'N', 'G'], "Test case 6 failed"
+
 
 
     print("All test cases passed!")
