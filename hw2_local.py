@@ -17,11 +17,17 @@ def er(w, dataframe):
       y = row['CreditApprove']#get application result for applicant i
       attributes = [row['Gender'], row['CarOwner'], row['PropertyOwner'], row['#Children'], row['WorkPhone'], row['Email_ID']] #store attribute values for applicant i in list (Gender - Email_ID)
       summation += pow((f(attributes, w) - y), 2) #call linear relation approximation function above
-   return (1 / 339) * summation
+   return (1 / len(dataframe)) * summation
 
 #generates adjacent neighbors to current w (differ by exactly one element)      
-def generate_neighbors():
-   pass
+def generate_neighbors(w):
+   all_neighbors = [] #store all adjacent neighbors (2d array)
+   #loop 6 times, each time flipping bit at index i
+   for i in range (len(w)):
+      neighbor = w.copy()#make a copy of current w
+      neighbor[i] *= -1 #flip value at index in copy list
+      all_neighbors.append(neighbor)#add to list of neighbors
+   return (all_neighbors)   
 
 
 dataframe = pd.read_csv('CreditCard.csv') #read csv file and store it as a dataframe
@@ -29,12 +35,11 @@ dataframe.replace(to_replace={'M': 1, 'F': 0, 'Y': 1, 'N': 0}, inplace=True) #en
 dataframe.dropna(inplace=True)#remove line 142 in csv file that is missing gender attribute
 
 
-
+#implement hill climbing local search
 initial_w = [-1,-1,-1,-1,-1,-1] #start with a random solution for w 
+current = er(initial_w, dataframe)#get approximation error for current/initial state 
+print(generate_neighbors(initial_w))
 
-current_state = er(initial_w, dataframe)#get approximation error for current/initial state 
-
-print (current_state)
 # while True:
 
 #generate six neighbors and compute each of their approximation errors
