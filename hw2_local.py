@@ -4,32 +4,37 @@
 
 import pandas as pd 
 
+#function approximating linear relation between attributes of applicant x and their application result
+def f(x_attributes, w):
+   return (x_attributes[0] * w[0]) + (x_attributes[1] * w[1]) + (x_attributes[2] * w[2]) + (x_attributes[3]* w[3]) + (x_attributes[4]* w[4]) + (x_attributes[5]* w[5]) 
+    
+#function calculating approximation error 
+def er(w, dataframe):
+   summation = 0 #running total for (f(x) - y)^2 where x is applicant i and y is corresponding result
+   #loop through each row of the dataset (each person)
+   #iterrows returns a tuple containing row index and Series object containing values for that row
+   for index, row in dataframe.iterrows():   
+      y = row['CreditApprove']#get application result for applicant i
+      attributes = [row['Gender'], row['CarOwner'], row['PropertyOwner'], row['#Children'], row['WorkPhone'], row['Email_ID']] #store attribute values for applicant i in list (Gender - Email_ID)
+      summation += pow((f(attributes, w) - y), 2) #call linear relation approximation function above
+   return (1 / 339) * summation
+
+#generates adjacent neighbors to current w (differ by exactly one element)      
+def generate_neighbors():
+   pass
+
+
 dataframe = pd.read_csv('CreditCard.csv') #read csv file and store it as a dataframe
 dataframe.replace(to_replace={'M': 1, 'F': 0, 'Y': 1, 'N': 0}, inplace=True) #encode 'M','Y' to 1, and 'F','N' to 0, (inplace=True modifies original dataframe)
-
-
-
-
-#function approximating linear relation between attributes of applicants and their application result
-def f(x_attributes, w):
-   #have to get values of all attributes in table (gender...email)
-   return (w[0]) + (w[1]) + (w[2]) + (w[3]) + (w[4]) + (w[5]) 
-    
-
-#function calculating approximation error 
-def er(w):
-   #loop through each row of the dataset (each person) and
-   for i in range(len(dataframe)):
-      pass
-
+dataframe.dropna(inplace=True)#remove line 142 in csv file that is missing gender attribute
 
 
 
 initial_w = [-1,-1,-1,-1,-1,-1] #start with a random solution for w 
 
- #get approximation error for current/initial state 
+current_state = er(initial_w, dataframe)#get approximation error for current/initial state 
 
-
+print (current_state)
 # while True:
 
 #generate six neighbors and compute each of their approximation errors
