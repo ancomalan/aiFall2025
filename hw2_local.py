@@ -3,6 +3,7 @@
 #AI - Homework 2 (hill climbing local search)
 
 import pandas as pd 
+import matplotlib.pyplot as plt
 
 #function approximating linear relation between attributes of applicant x and their application result
 def f(x_attributes, w):
@@ -48,7 +49,7 @@ dataframe.dropna(inplace=True)#remove line 142 in csv file that is missing gende
 #implement hill climbing local search
 w = [-1,-1,-1,-1,-1,-1] #start with a random, intial state for w 
 error = er(w, dataframe)#get approximation error for current/initial state 
-
+y_values = [error]#y axis for plot containing smallest er(w) after every round of search (has current error initially)
 while True:
    neighbors = generate_neighbors(w) #generate six adjacent neighbors
    neighbor_errors = [er(w,dataframe) for w in neighbors] #for each neighbor, compute approximation errors and store them all in this list using list comprehension
@@ -60,7 +61,18 @@ while True:
    else:
       w = neighbors[index]    #otherwise, set smallest w as current w 
       error = smallest_error    #set current state to smallest_error 
-      
+      y_values.append(error)#append to list storing y values for later display
+
+#print optimal w and er(w)
+print("Optimal w = ", w)
+print("Optimal er(w) = ", error)
+
+#plot results 
+plt.title('Hill Climbing Local Search')#title
+plt.plot(y_values, marker='o') #matplotlib automatically gneerates x values 
+plt.ylabel('er(w)')
+plt.xlabel('Round of search')
+plt.show()
       
 
 
