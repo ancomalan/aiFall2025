@@ -29,6 +29,16 @@ def generate_neighbors(w):
       all_neighbors.append(neighbor)#add to list of neighbors
    return (all_neighbors)   
 
+#finds w with smallest approximation error 
+def find_best(errors):
+   smallest_error = errors[0]#initially set first element as smallest 
+   best_index = 0 #index in neighbor_results array corresponding to smallest approximation error value (initially set to 0)
+   for i in range (1, len(errors)):
+      #if current error is smaller, update to smallest
+      if errors[i] < smallest_error: 
+         smallest_error = errors[i]
+         best_index = i 
+   return smallest_error, best_index
 
 dataframe = pd.read_csv('CreditCard.csv') #read csv file and store it as a dataframe
 dataframe.replace(to_replace={'M': 1, 'F': 0, 'Y': 1, 'N': 0}, inplace=True) #encode 'M','Y' to 1, and 'F','N' to 0, (inplace=True modifies original dataframe)
@@ -36,15 +46,23 @@ dataframe.dropna(inplace=True)#remove line 142 in csv file that is missing gende
 
 
 #implement hill climbing local search
-initial_w = [-1,-1,-1,-1,-1,-1] #start with a random solution for w 
-current = er(initial_w, dataframe)#get approximation error for current/initial state 
-print(generate_neighbors(initial_w))
+w = [-1,-1,-1,-1,-1,-1] #start with a random, intial state for w 
+error = er(w, dataframe)#get approximation error for current/initial state 
 
-# while True:
+while True:
+   neighbors = generate_neighbors(w) #generate six adjacent neighbors
+   neighbor_errors = [er(w,dataframe) for w in neighbors] #for each neighbor, compute approximation errors and store them all in this list using list comprehension
+   smallest_error, index = find_best(neighbor_errors) #get smallest error and index of corresponding neighbor 
+   
+   #if no neighbor has a lower approximation error, algorithm ends
+   if smallest_error > error: 
+      break
+   else:
+      w = neighbors[index]    #otherwise, set smallest w as current w 
+      error = smallest_error    #set current state to smallest_error 
+      
+      
 
-#generate six neighbors and compute each of their approximation errors
 
-#if no neighbor has a lower approximation error, return current
 
-#set current state to be neighbor with lowest e(r) 
 
