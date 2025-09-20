@@ -41,35 +41,41 @@ def find_best(errors):
          best_index = i 
    return smallest_error, best_index
 
+#function for hill climbing local search 
+def hill_climbing_local_search(initial_w, dataframe):
+   current_w = initial_w 
+   current_error = er(current_w, dataframe)#get approximation error for current/initial state 
+   y_values = [current_error]#y axis for plot containing smallest er(w) after every round of search (has current error initially)
+   
+   while True:
+      neighbors = generate_neighbors(current_w) #generate six adjacent neighbors
+      neighbor_errors = [er(w,dataframe) for w in neighbors] #for each neighbor, compute approximation errors and store them all in this list using list comprehension
+      smallest_error, index = find_best(neighbor_errors) #get smallest error and index of corresponding neighbor 
+   
+      #if no neighbor has a lower approximation error, algorithm ends
+      if smallest_error >= current_error: 
+         return current_error, current_w, y_values
+      else:
+         current_error = smallest_error    #set current state to smallest_error 
+         current_w = neighbors[index]    #otherwise, set smallest w as current w 
+         y_values.append(current_error)#append to list storing y values for later display
+  
+
+
 dataframe = pd.read_csv('CreditCard.csv') #read csv file and store it as a dataframe
 dataframe.replace(to_replace={'M': 1, 'F': 0, 'Y': 1, 'N': 0}, inplace=True) #encode 'M','Y' to 1, and 'F','N' to 0, (inplace=True modifies original dataframe)
 dataframe.dropna(inplace=True)#remove line 142 in csv file that is missing gender attribute
 
-
-#implement hill climbing local search
 w = [-1,-1,-1,-1,-1,-1] #start with a random, intial state for w 
-error = er(w, dataframe)#get approximation error for current/initial state 
-y_values = [error]#y axis for plot containing smallest er(w) after every round of search (has current error initially)
-while True:
-   neighbors = generate_neighbors(w) #generate six adjacent neighbors
-   neighbor_errors = [er(w,dataframe) for w in neighbors] #for each neighbor, compute approximation errors and store them all in this list using list comprehension
-   smallest_error, index = find_best(neighbor_errors) #get smallest error and index of corresponding neighbor 
-   
-   #if no neighbor has a lower approximation error, algorithm ends
-   if smallest_error > error: 
-      break
-   else:
-      w = neighbors[index]    #otherwise, set smallest w as current w 
-      error = smallest_error    #set current state to smallest_error 
-      y_values.append(error)#append to list storing y values for later display
+optimal_error, optimal_w, y_values = hill_climbing_local_search(w, dataframe)#call hill climbing local search function using initial w
 
 #print optimal w and er(w)
-print("Optimal w = ", w)
-print("Optimal er(w) = ", error)
+print("Optimal w = ", optimal_w)
+print("Optimal er(w) = ", optimal_error)
 
 #plot results 
-plt.title('Hill Climbing Local Search')#title
-plt.plot(y_values, marker='o') #matplotlib automatically gneerates x values 
+plt.title('Hill Climbing Local Search')
+plt.plot(y_values, marker='o') #matplotlib automatically generates x values 
 plt.ylabel('er(w)')
 plt.xlabel('Round of search')
 plt.show()
