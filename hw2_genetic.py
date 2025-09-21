@@ -44,9 +44,18 @@ def normalization(fitness_values):
 def select_parents(population, probabilities): 
    population_indices = [i for i in range(len(population))] #indices of each individual (w) in population, because np.random.choices needs a to be 1-D array
    parent_indices = np.random.choice(a=population_indices, size=2, p=probabilities) #list containing two selected parent indexes
-   print("Parent indices: ", parent_indices)
    return population[parent_indices[0]], population[parent_indices[1]]#return actual value of w for each parent index
  
+def reproduce(parent_1, parent_2):
+   n = len (parent_1) #number of elements in w
+   crossover_point = 3   #crossover point is the middle of w (first three elements of w is recombined with the last elements of another w')
+   #specify a range of indexes, which returns a new list with those specified items
+   parent_1_contribution = parent_1[0:crossover_point]#get first three elements of parent 1 (indices 0-2, 3 NOT included)
+   parent_2_contribution = parent_2[crossover_point: n] #get last three elements of parent 2  (indices 3-5, 6 NOT included)
+   child = parent_1_contribution + parent_2_contribution
+   return child
+
+
 
 #returns the best individual in the population, according to fitness
 def genetic_algorithm(population, dataframe):
@@ -55,8 +64,8 @@ def genetic_algorithm(population, dataframe):
    probabilities = normalization(fitness_values) #convert fitness values to probabilites using normalization (for parent selection)
    new_population = [] #stores children formed from crossover and mutation
    parent_1, parent_2 = select_parents(population, probabilities) #select parents
-
-
+   child = reproduce(parent_1, parent_2) #crossover to produce new child
+  
 
    
    
