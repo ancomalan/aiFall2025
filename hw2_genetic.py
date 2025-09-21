@@ -3,12 +3,11 @@
 #AI - Homework 2 (genetic algorithm)
 
 import math #for Euler's number 
-import pandas as pd 
-
+import pandas as pd #for csv preprocessing 
+import numpy as np #for selection of parents based on probability
 #evolutionary search generates w' with proper probability
 #chromosome = collection of genes (individuals)
 #populations = collections of individuals
-
 
 
 
@@ -41,8 +40,13 @@ def normalization(fitness_values):
       probabilities.append(probability_selection)
    return probabilities #return list
 
-
-
+#returns two parents based on probabilities proportional to their fitness values 
+def select_parents(population, probabilities): 
+   population_indices = [i for i in range(len(population))] #indices of each individual (w) in population, because np.random.choices needs a to be 1-D array
+   parent_indices = np.random.choice(a=population_indices, size=2, p=probabilities) #list containing two selected parent indexes
+   print("Parent indices: ", parent_indices)
+   return population[parent_indices[0]], population[parent_indices[1]]#return actual value of w for each parent index
+ 
 
 #returns the best individual in the population, according to fitness
 def genetic_algorithm(population, dataframe):
@@ -50,11 +54,12 @@ def genetic_algorithm(population, dataframe):
    fitness_values = [fitness_function(w, dataframe) for w in population] #list of corresponding fitness values for each individual in population (using list comprehension)
    probabilities = normalization(fitness_values) #convert fitness values to probabilites using normalization (for parent selection)
    new_population = [] #stores children formed from crossover and mutation
+   parent_1, parent_2 = select_parents(population, probabilities) #select parents
+
+
+
    
-
-
-   #selection of parents based on probabilities proportional to their fitness values 
-   #^do this twice and get individuals to mutate
+   
 
    
 
@@ -65,7 +70,7 @@ dataframe = pd.read_csv('CreditCard.csv') #read csv file and store it as a dataf
 dataframe.replace(to_replace={'M': 1, 'F': 0, 'Y': 1, 'N': 0}, inplace=True) #encode 'M','Y' to 1, and 'F','N' to 0, (inplace=True modifies original dataframe)
 dataframe.dropna(inplace=True)#remove line 142 in csv file that is missing gender attribute
 
-initial_population = [[-1,-1,-1,-1,-1,-1],[1,1,1,1,1,1],[1,-1,1,-1,1,-1]] #create initial population (each w is a chromosome)
+initial_population = [[-1,-1,-1,-1,-1,-1],[1,1,1,1,1,1],[1,-1,1,-1,1,-1], [1,1,-1,-1,-1,-1]] #create initial population (each w is a chromosome)
 genetic_algorithm(initial_population, dataframe) #pass fitness function as argument
 
 #print optimal w and optimal er(w)
