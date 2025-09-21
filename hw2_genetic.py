@@ -8,8 +8,7 @@ import pandas as pd
 #evolutionary search generates w' with proper probability
 #chromosome = collection of genes (individuals)
 #populations = collections of individuals
-#proportionate fitness selection (roulette wheel): p(selecting individual i) =  fitness (i)/sum of fitness of all members of population
-#^do this twice and get individuals to mutate
+
 
 
 
@@ -28,11 +27,36 @@ def er(w, dataframe):
       summation += pow((f(attributes, w) - y), 2) #call linear relation approximation function above
    return (1 / len(dataframe)) * summation
 
-#fitness function ("how do we evaluate an individual")
+#fitness function (higher fitness value corresponds to w with smaller er(w))
 def fitness_function(w, dataframe): 
    return math.e ** (-1 * er(w, dataframe)) 
 
+#function for generating probabilities of individuals/chromosomes using normalization
+#proportionate fitness selection (roulette wheel): p(selecting individual i) =  fitness of individual i/sum of fitness of all members of population
+def normalization(fitness_values):
+   probabilities = [] #stores probabilities for parent selection proportional to each fitness value
+   #for each fitness value, convert to probability and add to above list
+   for value in fitness_values:  
+      probability_selection = value / sum(fitness_values)
+      probabilities.append(probability_selection)
+   return probabilities #return list
 
+
+
+
+#returns the best individual in the population, according to fitness
+def genetic_algorithm(population, dataframe):
+   #loop forever until we find a goal or run out of time
+   fitness_values = [fitness_function(w, dataframe) for w in population] #list of corresponding fitness values for each individual in population (using list comprehension)
+   probabilities = normalization(fitness_values) #convert fitness values to probabilites using normalization (for parent selection)
+   new_population = [] #stores children formed from crossover and mutation
+   
+
+
+   #selection of parents based on probabilities proportional to their fitness values 
+   #^do this twice and get individuals to mutate
+
+   
 
 
 
@@ -41,13 +65,14 @@ dataframe = pd.read_csv('CreditCard.csv') #read csv file and store it as a dataf
 dataframe.replace(to_replace={'M': 1, 'F': 0, 'Y': 1, 'N': 0}, inplace=True) #encode 'M','Y' to 1, and 'F','N' to 0, (inplace=True modifies original dataframe)
 dataframe.dropna(inplace=True)#remove line 142 in csv file that is missing gender attribute
 
-initial_population = [[-1,-1,-1,-1,-1,-1],[1,1,1,1,1,1]] #create initial population (each w is a chromosome)
-#evaluate initial population
+initial_population = [[-1,-1,-1,-1,-1,-1],[1,1,1,1,1,1],[1,-1,1,-1,1,-1]] #create initial population (each w is a chromosome)
+genetic_algorithm(initial_population, dataframe) #pass fitness function as argument
+
+#print optimal w and optimal er(w)
+#plot results 
 
 
-#loop forever until we find a goal or run out of time
 
 
-#create new population by crossover and mutate
 
 
