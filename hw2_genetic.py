@@ -5,6 +5,7 @@
 import math #for Euler's number 
 import pandas as pd #for csv preprocessing 
 import numpy as np #for selection of parents based on probability
+import random #for mutation
 #evolutionary search generates w' with proper probability
 #chromosome = collection of genes (individuals)
 #populations = collections of individuals
@@ -55,6 +56,20 @@ def reproduce(parent_1, parent_2):
    child = parent_1_contribution + parent_2_contribution
    return child
 
+#each location in each string is subject to random mutation with a small independent probability
+def mutate(child):
+   mutated_child = child.copy() #will be returned 
+   mutation_rate = 0.01 #set small initially 
+   #simulate chance of mutation for each bit by generating a random number between 0 and 1
+   for i in range(len(child)):
+      if random.random() < mutation_rate: 
+         mutated_child[i] *= -1 #flip value at index
+   return mutated_child
+
+      
+   
+      
+
 
 
 #returns the best individual in the population, according to fitness
@@ -65,7 +80,7 @@ def genetic_algorithm(population, dataframe):
    new_population = [] #stores children formed from crossover and mutation
    parent_1, parent_2 = select_parents(population, probabilities) #select parents
    child = reproduce(parent_1, parent_2) #crossover to produce new child
-  
+   mutated_child = mutate(child) #mutate child
 
    
    
