@@ -64,7 +64,6 @@ def hill_climbing_local_search(initial_w, dataframe):
 
 dataframe = pd.read_csv('CreditCard.csv') #read csv file and store it as a dataframe
 dataframe.replace(to_replace={'M': 1, 'F': 0, 'Y': 1, 'N': 0}, inplace=True) #encode 'M','Y' to 1, and 'F','N' to 0, (inplace=True modifies original dataframe)
-dataframe.dropna(inplace=True)#remove line 142 in csv file that is missing gender attribute
 
 w = [-1,-1,-1,-1,-1,-1] #start with a random, intial state for w 
 optimal_error, optimal_w, y_values = hill_climbing_local_search(w, dataframe)#call hill climbing local search function using initial w
