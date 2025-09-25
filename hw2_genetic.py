@@ -2,14 +2,14 @@
 #OU Fall 2025
 #AI - Homework 2 (genetic algorithm)
 
-import math #for Euler's number 
-import pandas as pd #for csv preprocessing 
-import numpy as np #for selection of parents based on probability
-import random #for mutation
-import matplotlib.pyplot as plt #for plotting
 #chromosome = collection of genes (individual)
 #populations = collections of individuals
 
+import math #for Euler's number 
+import pandas as pd #for csv preprocessing 
+import numpy as np #for selection of parents based on probability
+import random #for mutation and simulating probability
+import matplotlib.pyplot as plt #for plotting
 
 
 #function approximating linear relation between attributes of applicant x and their application result
@@ -34,7 +34,7 @@ def fitness_function(w, dataframe):
 #function for generating probabilities of individuals/chromosomes using normalization
 #proportionate fitness selection: probability(selecting individual i) =  fitness of individual i/sum of fitness of all members of population
 def normalization(fitness_values):
-   probabilities = [] #stores probabilities for parent selection proportional to each fitness value
+   probabilities = [] #stores probabilities for parent selection proportional to each fitness value in corresponding index
    fitness_sum = sum(fitness_values) #sum of fitness values for all members of population
    #for each fitness value, convert to probability and add to above list
    for value in fitness_values:  
@@ -42,44 +42,45 @@ def normalization(fitness_values):
       probabilities.append(probability_selection)
    return probabilities #return list
 
-#returns two parents based on probabilities proportional to their fitness values 
+#returns two parents that were selected based on probabilities proportional to their fitness values 
 def select_parents(population, probabilities): 
-   population_indices = [i for i in range(len(population))] #indices of each individual (w) in population, because np.random.choices needs a to be 1-D array
-   parent_indices = np.random.choice(a=population_indices, size=2, p=probabilities) #list containing two selected parent indexes
+   population_indices = [i for i in range(len(population))] #indices representing each individual (w) in population, because np.random.choices needs a to be 1-D array
+   parent_indices = np.random.choice(a=population_indices, size=2, p=probabilities) #returns list containing two selected parent indexes based on given probabilities
    return population[parent_indices[0]], population[parent_indices[1]]#return actual value of w for each parent index
  
 def reproduce(parent_1, parent_2):
-   n = len (parent_1) #number of elements in w
-   crossover_point = 3   #crossover point is the middle of w (first three elements of w is recombined with the last elements of another w')
+   n = len (parent_1) #number of genes in each w (e.g. w = [1,1,1,1,1,1] has 6 genes)
+   crossover_point = 3   #crossover point is the middle of w (first three elements of one w is recombined with the last elements of another w')
    #specify a range of indexes, which returns a new list with those specified items
    parent_1_contribution = parent_1[0:crossover_point]#get first three elements of parent 1 (indices 0-2, 3 NOT included)
    parent_2_contribution = parent_2[crossover_point: n] #get last three elements of parent 2  (indices 3-5, 6 NOT included)
-   child = parent_1_contribution + parent_2_contribution
+   child = parent_1_contribution + parent_2_contribution #perform crossover operation
    return child
 
 #each location in each string is subject to random mutation with a small independent probability
 def mutate(child):
    mutated_child = child.copy() #will be returned 
-   mutation_rate = 0.01
+   mutation_rate = 0.05
    #simulate chance of mutation for each bit by generating a random number between 0 and 1
    for i in range(len(child)):
       if random.random() < mutation_rate: 
          mutated_child[i] *= -1 #flip value at index
    return mutated_child
 
-#function calculates fitness values of population, returns best w with smallest er(w) & parent selection probabilities for population, and updates list of smallest er(w) for each round of generation
-def evaluate(population, dataframe, y_values):
+#function calculates fitness values of population, returns best individual, their er(w), and parent selection probabilities
+#also updates 
+def evaluate(population, dataframe, best_w_errors):
    fitness_values = [fitness_function(w, dataframe) for w in population] #list of corresponding fitness values for each individual in population (using list comprehension)
    probabilities = normalization(fitness_values) #convert fitness values to probabilites using normalization (for parent selection)
-   fittest_index = fitness_values.index(max(fitness_values)) #get index of element with largest (fittest) fitness value 
-   best_w = population[fittest_index]#use index to access w in population with smallest er(w)
+   best_w_index = fitness_values.index(max(fitness_values)) #get index of best individual in population (highest fitness value) 
+   best_w = population[best_w_index]#use index to access best w in population with smallest er(w) that will be copied into the next generation (elitism)
    smallest_error = er(best_w, dataframe) #get smallest error during this generation from best w 
-   y_values.append(smallest_error)#add to y_value list for plotting
+   best_w_errors.append(smallest_error) #update list containing best individual's er(w) for each round of generation
    return best_w, smallest_error, probabilities
    
-#function creates random initial population of w's
+#function creates random initial population of w's of a given size
 def generate_population(size):
-   available_numbers = [1,-1] #possible genes for each individual w
+   available_numbers = [1,-1] #possible genes to choose from for each individual w
    population = []
 
    #repeat for each individual in population
@@ -95,26 +96,27 @@ def generate_population(size):
 
 #returns the best individual in the population, according to fitness
 def genetic_algorithm(dataframe):
-   population = generate_population(5)   #randomly generate a population with specified size 
-   y_values = [] #contains smallest er(w) for each round of generation (for plotting) 
-   best_w, smallest_error, probabilities = evaluate(population, dataframe, y_values) #evaluate the initial population
-   goal = 1.3 #based on best error found from hill climbing local search 
-   max_number_generations = 300 #for looping until enough time has elapsed
+   population = generate_population(3) #randomly generate a population with specified size 
+   best_w_errors = [] #contains smallest er(w) from best individual  of each round of generation (for plotting) 
+   best_w, smallest_error, probabilities = evaluate(population, dataframe, best_w_errors) #evaluate the initial population
+   goal = 1.2 #based on best error found from hill climbing local search 
+   max_number_generations = 200 #for looping until enough time has elapsed
 
    #loop forever until we find a goal (some individual is fit enough) or enough time has passed
    while smallest_error > goal and max_number_generations > 0: 
       max_number_generations -= 1 
-      new_population = [] #stores children formed from crossover and mutation
-      #number children generated = size of current population
-      for individual in population:
+      new_generation = [] #stores children formed from crossover/mutation. 
+      new_generation.append(best_w)#elitism (copy best individual from previous round of generation into the next generation)
+      #number offspring in new generation = size of current population
+      #generate remaining offspring for new generation
+      for i in range(1, len(population)):
          parent_1, parent_2 = select_parents(population, probabilities) #select parents
          child = reproduce(parent_1, parent_2) #crossover to produce new child
          mutated_child = mutate(child) #mutate child
-         new_population.append(mutated_child)#add child to new population
-      population = new_population #update new generation of children to be current population
-      best_w, smallest_error, probabilities = evaluate(population, dataframe, y_values) #revaluate population
-   
-   return best_w, smallest_error, y_values
+         new_generation.append(mutated_child)#add child to new population
+      population = new_generation #update new generation of children to be current population
+      best_w, smallest_error, probabilities = evaluate(population, dataframe, best_w_errors) #revaluate population
+   return best_w, smallest_error, best_w_errors
 
 
 
