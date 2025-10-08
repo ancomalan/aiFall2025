@@ -64,8 +64,8 @@ for per in num_train_per:
     er_test_per.append(er_test)
     # --- end of task --- #
     
-plt.plot(num_train_per,er_train_per, label='Training Error')
-plt.plot(num_train_per,er_test_per, label='Testing Error')
+plt.plot(num_train_per,er_train_per, label='Training Error', marker='o')
+plt.plot(num_train_per,er_test_per, label='Testing Error', marker='o')
 plt.xlabel('Percentage of Training Data')
 plt.ylabel('Prediction Error (MSE)')
 plt.legend()
