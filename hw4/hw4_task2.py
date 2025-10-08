@@ -39,7 +39,7 @@ label_train = data[0:num_train,-1]
 # Pick 8 candidate values for alpha (in ascending order)
 # Remember we should aim to observe both overfitting and underfitting from these values 
 # Suggestion: the first value should be very small and the last should be large 
-alpha_vec = [0.00000001, 0.0001, 0.01, 1, 10, 100, 1000] #overfitting occurs when model is trained on a small portion of data 
+alpha_vec = [0.0000001, 0.000001, 0.0001, 0.01, 1, 10, 100, 1000] #overfitting occurs when model is trained on a small portion of data 
 
 # --- end of task --- #
 
