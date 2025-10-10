@@ -29,7 +29,7 @@ label_test = data[n-num_test:,-1]
 # pick 8 values for array "num_train_per" e.g., 0.5 means using 50% of the available data for training 
 # You should aim to observe overiftting (and normal performance) from these 8 values 
 # Note: maximum percentage is 0.75
-num_train_per = [0.03, 0.05, 0.1, 0.15, 0.2, 0.4, 0.5, 0.75]
+num_train_per = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.75]
 
 # --- end of task --- #
 
