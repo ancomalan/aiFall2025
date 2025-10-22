@@ -1,11 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
-
+ 
 # --- Your Task --- #
 # import necessary library 
 # if you need more libraries, just import them
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, roc_auc_score #for classification error and auc score
+from imblearn.over_sampling import RandomOverSampler #handle imbalanced datasets using imblearn
+
 # ......
 # --- end of task --- #
 
@@ -35,7 +37,7 @@ for per in num_train_per:
     num_train = int(n*per)
     sample_train = data[0:num_train,0:-1]
     label_train = data[0:num_train,-1]
-
+    
     model = LogisticRegression()
 
     # --- Your Task --- #
@@ -63,29 +65,40 @@ for per in num_train_per:
     # Now, implement your method 
     # Aim to improve AUC score of baseline 
     # while maintaining accuracy as much as possible 
-    # ......
-    # ......
-    # ......
+    my_model = LogisticRegression() #create new model 
+
+    #tried smote and adasyn but wasn't effective
+    #perform data balancing on training set, after train test split
+    #oversampling = increase size of minority class 
+    ros = RandomOverSampler(sampling_strategy="not majority") #resample all classes except for majority class
+    resampled_sample_train, resampled_label_train = ros.fit_resample(sample_train, label_train) 
+
+    my_model.fit(resampled_sample_train, resampled_label_train)#train the model with resampled data
+
     # evaluate model testing accuracy and stores it in "acc_yours"
-    # ......
-    #acc_yours_per.append(acc_yours)
+    my_model_label_test_pred = my_model.predict(sample_test) #predict unseen label data from unseen test data
+    acc_yours = accuracy_score(label_test, my_model_label_test_pred)#compute accuracy 
+    acc_yours_per.append(acc_yours)
     # evaluate model testing AUC score and stores it in "auc_yours"
-    # ......
-    #auc_yours_per.append(auc_yours)
+    #get prediction probability data matrix using predict_proba
+    my_model_probs = my_model.predict_proba(sample_test)
+    my_model_probs = my_model_probs[:, 1]#keep positive outcomes
+    auc_yours = roc_auc_score(label_test, my_model_probs)#compute AUC score
+    auc_yours_per.append(auc_yours)
     # --- end of task --- #
     
 
 plt.figure()    
 plt.plot(num_train_per,acc_base_per, label='Base Accuracy')
-#plt.plot(num_train_per,acc_yours_per, label='Your Accuracy')
+plt.plot(num_train_per,acc_yours_per, label='Your Accuracy')
 plt.xlabel('Percentage of Training Data')
 plt.ylabel('Classification Accuracy')
 plt.legend()
-plt.show()
+
 
 plt.figure()
 plt.plot(num_train_per,auc_base_per, label='Base AUC Score')
-#plt.plot(num_train_per,auc_yours_per, label='Your AUC Score')
+plt.plot(num_train_per,auc_yours_per, label='Your AUC Score')
 plt.xlabel('Percentage of Training Data')
 plt.ylabel('Classification AUC Score')
 plt.legend()
