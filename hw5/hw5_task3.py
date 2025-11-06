@@ -7,7 +7,7 @@ from sklearn.decomposition import PCA
 
 # --- Your Task --- #
 # import libraries as needed 
-# .......
+from mpl_toolkits import mplot3d #for 3d scatter plot
 # --- end of task --- #
 
 # -------------------------------------
@@ -92,4 +92,17 @@ colors = ['blue','red','green','m']
 for i in range(k):
      idx = np.where(label_cluster == i)
      plt.scatter(sample_pca[idx,0],sample_pca[idx,1],color=colors[i],facecolors='none')
+plt.show()
+
+
+#plotting clustering result in a 3D space
+pca = PCA(n_components=3) #reduce data to 3 dimensions
+pca.fit(sample)
+sample_pca = pca.transform(sample)
+idx = [] #stores indices of points in each cluster
+colors = ['blue','red','green','m']
+ax = plt.axes(projection='3d')
+for i in range(k):
+     idx = np.where(label_cluster == i)
+     ax.scatter(sample_pca[idx,0],sample_pca[idx,1],sample_pca[idx, 2], color=colors[i],facecolors='none')
 plt.show()
