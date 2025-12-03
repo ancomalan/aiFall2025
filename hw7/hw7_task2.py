@@ -27,7 +27,11 @@ er_train_m = []
 er_test_m = []
 for m in m_values: 
     layers = tuple(k_values for _ in range(m)) # create tuple representing the amount of hidden layers, each having 10 neurons
-    model = MLPClassifier(hidden_layer_sizes=layers, max_iter=5000) # create MLP classification model with fixed number of neurons 
+    
+    # create MLP classification model with fixed number of neurons
+    # As suggested by Guanchong, use lower learning rate and more epochs for deeper networks (fixed optimization issue I was having prior)
+    model = MLPClassifier(hidden_layer_sizes=layers, max_iter=20000, learning_rate_init=0.0001) 
+
     model.fit(sample_train, label_train) # train a MLP classification model 
     
     # evaluate training error 
